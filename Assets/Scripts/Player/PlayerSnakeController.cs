@@ -1,16 +1,9 @@
 /*
- * PlayerSnakeController.cs
+ * GAME 220: Slither Template -- PlayerSnakeController
+ * Steers the head toward the pointer and keeps the body in a List (HEAD -> Seg0 -> Seg1 -> ...).
+ * Concepts: LOOPS_AND_LISTS_CONCEPTS.md section 1 -- input actions, Update vs FixedUpdate, List<T>, for/foreach
  *
- * LEARNING FOCUS: List<T> and Loops
- *
- * Key Concepts:
- * - List<T>: Dynamic collection that grows/shrinks
- * - for loop: Repeat code N times
- * - foreach loop: Process every item in a collection
- *
- * The snake body uses a "follow the leader" pattern:
- * HEAD → Seg0 → Seg1 → Seg2 → ...
- * Each segment follows the one ahead of it.
+ * Session 1: Update()/MoveHead()   Sessions 2-3: AddSegment()/Grow()   Session 5: CheckBoundaries()/Die()
  */
 
 using System.Collections.Generic;
@@ -19,9 +12,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerSnakeController : MonoBehaviour
 {
-    // An InputAction is a NAME for something the player can do ("Steer"),
-    // separate from what triggers it (the mouse, a touchscreen, a gamepad).
-    // Those triggers are called BINDINGS. Expand this in the Inspector to see them.
+    // ---------- Settings ----------
+
+    // An InputAction names what the player does; expand it in the Inspector to see its bindings
     [Header("Input")]
     [SerializeField] private InputAction steerAction =
         new InputAction("Steer", InputActionType.Value, "<Pointer>/position", expectedControlType: "Vector2");
@@ -35,12 +28,13 @@ public class PlayerSnakeController : MonoBehaviour
     public GameObject segmentPrefab;
     public float segmentSpacing = 0.5f;
 
-    // List<T> - A dynamic collection that can grow and shrink
-    // We use it to track all body segments
+    // List<T> can grow and shrink, so it tracks every body segment
     private List<SnakeSegment> bodySegments = new List<SnakeSegment>();
 
     private Vector3 moveDirection;
     private bool isAlive = true;
+
+    // ---------- Unity lifecycle ----------
 
     void Start()
     {
@@ -48,8 +42,7 @@ public class PlayerSnakeController : MonoBehaviour
         CreateStartingBody();
     }
 
-    // An action does nothing until it is enabled. OnEnable (not Start) runs
-    // every time this object is switched on, so input always comes back.
+    // Actions do nothing until enabled; OnEnable runs every time this object is switched on
     void OnEnable()
     {
         steerAction.Enable();
@@ -78,6 +71,8 @@ public class PlayerSnakeController : MonoBehaviour
         CheckBoundaries();
     }
 
+    // ---------- Movement (Session 1) ----------
+
     void MoveHead()
     {
         transform.position += moveDirection * moveSpeed * Time.fixedDeltaTime;
@@ -91,8 +86,9 @@ public class PlayerSnakeController : MonoBehaviour
         }
     }
 
-    // FOR LOOP: Create starting body segments
-    // Runs AddSegment() exactly startingSegments times
+    // ---------- Body list (Sessions 2-3) ----------
+
+    // FOR LOOP: runs AddSegment() exactly startingSegments times
     void CreateStartingBody()
     {
         for (int i = 0; i < startingSegments; i++)
@@ -149,6 +145,22 @@ public class PlayerSnakeController : MonoBehaviour
         }
     }
 
+    public void EatFood(FoodType food)
+    {
+        switch (food)
+        {
+            case FoodType.Normal:
+                Grow(1);
+                break;
+            case FoodType.Super:
+                Grow(3);
+                break;
+            case FoodType.Poison:
+                Die();
+                break;
+        }
+    }
+
     // Called by FoodPellet when snake eats food
     public void Grow(int amount)
     {
@@ -157,6 +169,8 @@ public class PlayerSnakeController : MonoBehaviour
             AddSegment();
         }
     }
+
+    // ---------- Collision and edges (Session 5) ----------
 
     void OnTriggerEnter2D(Collider2D other)
     {

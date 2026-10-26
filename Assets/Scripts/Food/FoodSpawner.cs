@@ -1,13 +1,9 @@
 /*
- * FoodSpawner.cs
+ * GAME 220: Slither Template -- FoodSpawner
+ * Keeps the arena stocked: List.Add() on spawn, List.Remove() on collect, a while loop to find a safe spot.
+ * Concepts: LOOPS_AND_LISTS_CONCEPTS.md section 3 -- List add/remove lifecycle, for and while loops
  *
- * LEARNING FOCUS: List Add/Remove lifecycle
- *
- * Key Concepts:
- * - List.Add() when spawning
- * - List.Remove() when collected
- * - for loop for batch spawning
- * - while loop for validation with retry
+ * Session 4: read Start(), OnFoodCollected(), and GetRandomValidPosition()
  */
 
 using System.Collections.Generic;
@@ -47,6 +43,26 @@ public class FoodSpawner : MonoBehaviour
             // List.Add() - track this food
             activeFoodPellets.Add(pellet);
             pellet.SetSpawner(this);
+            pellet.SetFoodType(GetRandomFoodType());
+        }
+    }
+
+    private FoodType GetRandomFoodType()
+    {
+        // Randomly select a food type based on desired probabilities
+        float randomValue = Random.value;
+
+        if (randomValue < 0.7f)
+        {
+            return FoodType.Normal; // 70% chance
+        }
+        else if (randomValue < 0.9f)
+        {
+            return FoodType.Super; // 20% chance
+        }
+        else
+        {
+            return FoodType.Poison; // 10% chance
         }
     }
 

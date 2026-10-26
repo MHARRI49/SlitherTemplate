@@ -30,10 +30,8 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] Hierarchy → Create Empty → Name: `SnakeSegment`
 - [ ] Add Component → Sprite Renderer
   - [ ] Sprite: Circle (Unity built-in)
-  - [ ] Material: `Assets/Materials/PlayerSnakeMaterial`
-- [ ] Add Component → Circle Collider 2D
-  - [ ] Is Trigger: ✅ Checked
-  - [ ] Radius: `0.4`
+  - [ ] Color: White (copied from the head at runtime)
+- [ ] No collider (`AddSegment()` adds one at runtime)
 - [ ] Add Component → Snake Segment (script)
 - [ ] Transform Scale: `(0.8, 0.8, 1)`
 - [ ] Drag to `Assets/Prefabs/` folder
@@ -43,7 +41,7 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] Hierarchy → Create Empty → Name: `FoodPellet`
 - [ ] Add Component → Sprite Renderer
   - [ ] Sprite: Circle
-  - [ ] Material: `Assets/Materials/FoodMaterial`
+  - [ ] Color: White
 - [ ] Add Component → Circle Collider 2D
   - [ ] Is Trigger: ✅ Checked
   - [ ] Radius: `0.15`
@@ -57,7 +55,7 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] Hierarchy → Create Empty → Name: `AISnake`
 - [ ] Add Component → Sprite Renderer
   - [ ] Sprite: Circle
-  - [ ] Material: `Assets/Materials/AISnakeMaterial`
+  - [ ] Color: Orange (RGB 255, 121, 0)
 - [ ] Add Component → Circle Collider 2D
   - [ ] Is Trigger: ✅ Checked
   - [ ] Radius: `0.5`
@@ -89,16 +87,15 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] AI Snake Prefab: Drag `AISnake` prefab here
 - [ ] Number Of AI Snakes: `3`
 - [ ] Spawn Area Min: `(-20, -15)`
-- [ ] Spawn Area Max: `(20, 15)`
+- [ ] Spawn Area Max: `(20, 15)` (Gizmo box only; AI spawn inside `BoundsHelper`)
 
 ### FoodSpawner
 - [ ] Hierarchy → Create Empty → Name: `FoodSpawner`
 - [ ] Add Component → Food Spawner (script)
 - [ ] Food Prefab: Drag `FoodPellet` prefab here
 - [ ] Initial Food Count: `20`
-- [ ] Spawn Area Min: `(-20, -15)`
-- [ ] Spawn Area Max: `(20, 15)`
 - [ ] Min Distance From Snakes: `2`
+- [ ] Max Spawn Attempts: `10`
 
 ### ScoreManager
 - [ ] Hierarchy → Create Empty → Name: `ScoreManager`
@@ -146,7 +143,7 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] Hierarchy → Create Empty → Name: `PlayerSnake`
 - [ ] Add Component → Sprite Renderer
   - [ ] Sprite: Circle
-  - [ ] Material: `PlayerSnakeMaterial`
+  - [ ] Color: Green (RGB 11, 255, 0)
 - [ ] Add Component → Circle Collider 2D
   - [ ] Is Trigger: ✅ Checked
   - [ ] Radius: `0.5`
@@ -156,9 +153,9 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] Add Component → Player Snake Controller (script)
   - [ ] Segment Prefab: Drag `SnakeSegment` prefab here
   - [ ] Starting Segments: `3`
-  - [ ] Move Speed: `5`
-  - [ ] Rotation Speed: `200`
-  - [ ] Collision Distance: `0.4`
+  - [ ] Move Speed: `3`
+  - [ ] Rotation Speed: `100`
+  - [ ] Segment Spacing: `0.5`
 - [ ] Tag: `Player`
 - [ ] Position: `(0, 0, 0)`
 - [ ] Scale: `(1, 1, 1)`
@@ -172,15 +169,15 @@ Use this checklist to set up the template in Unity. Estimated time: 40 minutes.
 - [ ] **Mouse cursor visible and moves**
 - [ ] **Player snake head follows cursor**
 - [ ] **3 body segments trail behind head**
-- [ ] **20 food pellets spawn (yellow circles)**
-- [ ] **3 AI snakes spawn (red circles)**
+- [ ] **20 food pellets spawn (small circles)**
+- [ ] **3 AI snakes spawn (orange circles)**
 - [ ] **AI snakes wander randomly**
 - [ ] Move snake to collect food
 - [ ] **Snake grows when eating food**
 - [ ] **Score increases (+10 per food)**
 - [ ] **Food respawns after collection**
-- [ ] Try to hit your own body
-- [ ] **Game over on self-collision**
+- [ ] Steer your head into an AI snake
+- [ ] **Game over on AI collision**
 - [ ] **"GAME OVER" text appears**
 - [ ] Press **R** key
 - [ ] **Game restarts successfully**

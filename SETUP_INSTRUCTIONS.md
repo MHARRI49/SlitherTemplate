@@ -2,6 +2,9 @@
 
 This guide walks you through setting up the Unity scene and prefabs for the Slither.io template.
 
+> **The scene and all 3 prefabs are already built** in this repo (`Assets/Scenes/SlitherTemplate_Base.unity`, `Assets/Prefabs/`).
+> Open the scene and press Play. Use this guide only to rebuild them or to check a broken setup.
+
 ---
 
 ## 📋 Prerequisites
@@ -47,10 +50,8 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 2. **Add Components:**
    - **Add Component → Rendering → Sprite Renderer**
      - Sprite: Select "Circle" (Unity built-in)
-     - Material: Select `Assets/Materials/PlayerSnakeMaterial`
-   - **Add Component → Physics 2D → Circle Collider 2D**
-     - Is Trigger: ✅ **Checked**
-     - Radius: `0.4`
+     - Color: White (`AddSegment()` copies the head's color at runtime)
+     - No collider: `AddSegment()` adds a Circle Collider 2D (radius 0.4, trigger) at runtime
    - **Add Component → Scripts → Snake Segment**
 
 3. **Transform Settings:**
@@ -73,7 +74,7 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 2. **Add Components:**
    - **Add Component → Rendering → Sprite Renderer**
      - Sprite: Circle (Unity built-in)
-     - Material: Select `Assets/Materials/FoodMaterial`
+     - Color: White
    - **Add Component → Physics 2D → Circle Collider 2D**
      - Is Trigger: ✅ **Checked**
      - Radius: `0.15`
@@ -102,7 +103,7 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 2. **Add Components:**
    - **Add Component → Rendering → Sprite Renderer**
      - Sprite: Circle (Unity built-in)
-     - Material: Select `Assets/Materials/AISnakeMaterial`
+     - Color: Orange (RGB 255, 121, 0)
    - **Add Component → Physics 2D → Circle Collider 2D**
      - Is Trigger: ✅ **Checked**
      - Radius: `0.5`
@@ -154,6 +155,7 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
    - Number Of AI Snakes: `3`
    - Spawn Area Min: `(-20, -15)`
    - Spawn Area Max: `(20, 15)`
+   - These only draw the cyan Gizmo box. AI actually spawn anywhere inside `BoundsHelper` (34 x 20, the green box).
 
 ---
 
@@ -164,9 +166,9 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 3. Configure:
    - Food Prefab: **Drag FoodPellet prefab here**
    - Initial Food Count: `20`
-   - Spawn Area Min: `(-20, -15)`
-   - Spawn Area Max: `(20, 15)`
    - Min Distance From Snakes: `2`
+   - Max Spawn Attempts: `10`
+   - Food spawns anywhere inside `BoundsHelper` (34 x 20), so there is no spawn area to set
 
 ---
 
@@ -241,7 +243,7 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 2. Add Components:
    - **Sprite Renderer**
      - Sprite: Circle
-     - Material: `PlayerSnakeMaterial`
+     - Color: Green (RGB 11, 255, 0)
    - **Circle Collider 2D**
      - Is Trigger: ✅ **Checked**
      - Radius: `0.5`
@@ -260,9 +262,9 @@ Since this is a minimal template, we'll use Unity's built-in circle sprite:
 5. Configure Script:
    - Segment Prefab: **Drag SnakeSegment prefab here**
    - Starting Segments: `3`
-   - Move Speed: `5`
-   - Rotation Speed: `200`
-   - Collision Distance: `0.4`
+   - Move Speed: `3`
+   - Rotation Speed: `100`
+   - Segment Spacing: `0.5`
 
 ---
 
@@ -308,7 +310,7 @@ Assets/
 │   ├── FoodPellet.prefab
 │   └── AISnake.prefab
 └── Materials/
-    ├── PlayerSnakeMaterial.mat
+    ├── PlayerSnakeMaterial.mat   (not used by the prefabs; colors are set on each Sprite Renderer)
     ├── AISnakeMaterial.mat
     └── FoodMaterial.mat
 ```
@@ -323,11 +325,11 @@ Assets/
 2. ✅ Mouse cursor visible
 3. ✅ Player snake head follows mouse
 4. ✅ 3 body segments trail behind head
-5. ✅ 20 food pellets spawn (yellow circles)
-6. ✅ 3 AI snakes spawn (red circles) and wander
+5. ✅ 20 food pellets spawn (small circles)
+6. ✅ 3 AI snakes spawn (orange circles) and wander
 7. ✅ Collecting food grows snake
 8. ✅ Score increases when eating food
-9. ✅ Snake dies on self-collision
+9. ✅ Snake dies when its head hits an AI snake
 10. ✅ Snake wraps at boundaries
 11. ✅ Press **R** to restart after game over
 
@@ -375,14 +377,14 @@ Assets/
 
 Once everything is working, explore these files in order:
 
-1. **Session 1**: `PlayerSnakeController.cs` (lines 80-115)
-2. **Session 2**: `PlayerSnakeController.cs` (lines 117-144), `SnakeSegment.cs`
-3. **Session 3**: `PlayerSnakeController.cs` (lines 146-184)
+1. **Session 1**: `PlayerSnakeController.cs` (`Update()`, `MoveHead()`)
+2. **Session 2**: `PlayerSnakeController.cs` (`CreateStartingBody()`, `AddSegment()`), `SnakeSegment.cs`
+3. **Session 3**: `PlayerSnakeController.cs` (`AddSegment()`, `Grow()`)
 4. **Session 4**: `FoodSpawner.cs`, `FoodPellet.cs`
-5. **Session 5**: `PlayerSnakeController.cs` (lines 211-240), `BoundsHelper.cs`
+5. **Session 5**: `PlayerSnakeController.cs` (`CheckBoundaries()`, `Die()`), `BoundsHelper.cs`
 6. **Session 6**: `AISnakeController.cs`, `GameManager.cs`
 
-Read the comments - they explain WHY and HOW!
+Each script's header names a section of `LOOPS_AND_LISTS_CONCEPTS.md` - that's where the WHY and HOW are.
 
 ---
 
@@ -390,7 +392,7 @@ Read the comments - they explain WHY and HOW!
 
 After setup is complete:
 1. Read `Assets/Scripts/README.md` for full teaching guide
-2. Review each script's teaching comments
+2. Read `LOOPS_AND_LISTS_CONCEPTS.md` alongside each script
 3. Experiment with Inspector values
 4. Try the extension ideas in the README
 

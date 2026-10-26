@@ -1,15 +1,9 @@
 /*
- * AISnakeController.cs
+ * GAME 220: Slither Template -- AISnakeController
+ * An AI snake: same List, for, and foreach patterns as PlayerSnakeController, but a timer picks the direction.
+ * Concepts: LOOPS_AND_LISTS_CONCEPTS.md section 8 -- code reuse
  *
- * LEARNING FOCUS: Code Reuse
- *
- * This script uses the SAME patterns as PlayerSnakeController:
- * - Same List<SnakeSegment> for body tracking
- * - Same for loop for creating body
- * - Same foreach loop for cleanup
- *
- * The ONLY difference: direction comes from a timer, not mouse input.
- * This demonstrates how patterns are reusable across different contexts.
+ * Session 6: compare this file with PlayerSnakeController
  */
 
 using System.Collections.Generic;
@@ -17,6 +11,8 @@ using UnityEngine;
 
 public class AISnakeController : MonoBehaviour
 {
+    // ---------- Settings ----------
+
     [Header("Movement")]
     public float moveSpeed = 4f;
     public float rotationSpeed = 150f;
@@ -33,6 +29,8 @@ public class AISnakeController : MonoBehaviour
     private Vector3 moveDirection;
     private float directionChangeTimer;
     private bool isAlive = true;
+
+    // ---------- Unity lifecycle ----------
 
     void Start()
     {
@@ -61,6 +59,8 @@ public class AISnakeController : MonoBehaviour
         CheckBoundaries();
     }
 
+    // ---------- Movement (timer instead of input) ----------
+
     void ChangeDirection()
     {
         Vector2 randomDir = Random.insideUnitCircle.normalized;
@@ -79,6 +79,8 @@ public class AISnakeController : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, newAngle);
         }
     }
+
+    // ---------- Body list (same as the player) ----------
 
     // Same pattern as PlayerSnakeController
     void CreateStartingBody()
@@ -136,6 +138,8 @@ public class AISnakeController : MonoBehaviour
             AddSegment();
         }
     }
+
+    // ---------- Edges, collision, cleanup ----------
 
     void CheckBoundaries()
     {

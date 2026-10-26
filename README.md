@@ -16,9 +16,9 @@ A comprehensive Unity 2D educational template teaching programming fundamentals 
 
 ### What Students Build:
 - Mouse-controlled snake that grows by eating food
-- Body segments that smoothly follow the head using queues
+- Body segments that follow the head in a chain (each one follows the segment ahead)
 - AI opponents that wander and compete for food
-- Collision detection (self, boundaries, AI)
+- Collision detection (AI snakes, food) and boundary wrapping
 - Score tracking and game over/restart flow
 
 ---
@@ -27,7 +27,6 @@ A comprehensive Unity 2D educational template teaching programming fundamentals 
 
 ### Primary Concepts:
 - **Lists (`List<T>`)** - Dynamic collections for segments, food, AI
-- **Queues (`Queue<T>`)** - FIFO position history for smooth following
 - **for loops** - Counted iteration (spawning, initialization)
 - **foreach loops** - Collection iteration (updating segments)
 - **while loops** - Conditional iteration (validation, limits)
@@ -46,7 +45,7 @@ A comprehensive Unity 2D educational template teaching programming fundamentals 
 |---------|------|--------|--------------|--------|
 | 1 | Feb 4 | Snake Movement & Input | Update/FixedUpdate, Vector math | ✅ |
 | 2 | Feb 6 | Body Segments Part 1 | List<T>, for loops | ✅ |
-| 3 | Feb 9 | Body Segments Part 2 | Queue<T>, Enqueue/Dequeue | ✅ |
+| 3 | Feb 9 | Body Segments Part 2 & Growth | List indexing, for loops | ✅ |
 | 4 | Feb 11 | Food System | List management, while loops | ✅ |
 | 5 | Feb 13 | Collision Detection | Loop optimization, boundaries | ✅ |
 | 6 | Feb 16 | AI Snakes & Polish | Code reuse, multiple Lists | ✅ |
@@ -107,9 +106,9 @@ Assets/
 │   ├── FoodPellet.prefab
 │   └── AISnake.prefab
 └── Materials/
-    ├── PlayerSnakeMaterial.mat        # Green
-    ├── AISnakeMaterial.mat            # Red
-    └── FoodMaterial.mat               # Yellow
+    ├── PlayerSnakeMaterial.mat        # Green (materials aren't assigned;
+    ├── AISnakeMaterial.mat            # Red    prefabs set Sprite Renderer
+    └── FoodMaterial.mat               # Yellow Color instead)
 ```
 
 ---
@@ -121,17 +120,17 @@ Assets/
 **Session 1: Movement Basics**
 - Focus: Why Update for input, FixedUpdate for physics
 - Demo: Add Debug.Log to both, show different call rates
-- File: `PlayerSnakeController.cs` lines 80-115
+- File: `PlayerSnakeController.cs` (`Update()`, `MoveHead()`)
 
 **Session 2: Introduction to Lists**
 - Focus: Dynamic collections vs fixed arrays
 - Demo: Try adding to array (can't!), then List.Add()
-- Files: `PlayerSnakeController.cs` lines 117-144, `SnakeSegment.cs`
+- Files: `PlayerSnakeController.cs` (`CreateStartingBody()`, `AddSegment()`), `SnakeSegment.cs`
 
-**Session 3: Queues for Smooth Following**
-- Focus: FIFO data structure for position trails
-- Demo: Whiteboard drawing of head path over time
-- File: `PlayerSnakeController.cs` lines 146-184
+**Session 3: Growth and the Follow Chain**
+- Focus: `bodySegments[bodySegments.Count - 1]` (the last item) and growing with a `for` loop
+- Demo: Raise the `Grow()` amount and watch `bodySegments.Count` in the Console
+- File: `PlayerSnakeController.cs` (`AddSegment()`, `Grow()`)
 
 **Session 4: List Management**
 - Focus: Add/Remove operations, validation loops
@@ -139,9 +138,9 @@ Assets/
 - Files: `FoodSpawner.cs`, `FoodPellet.cs`
 
 **Session 5: Loop Optimization**
-- Focus: break statements, smart loop starting points
-- Demo: Why start collision check at index 3?
-- Files: `PlayerSnakeController.cs` lines 211-240, `BoundsHelper.cs`
+- Focus: boundary wrapping, `foreach` to move every segment, game over flow
+- Demo: Swap `WrapPosition` for `ClampPosition` and compare
+- Files: `PlayerSnakeController.cs` (`CheckBoundaries()`, `Die()`), `BoundsHelper.cs`
 
 **Session 6: Code Reuse**
 - Focus: Same patterns work for player and AI
@@ -153,7 +152,7 @@ Assets/
 **Formative:**
 - Can students explain Update vs FixedUpdate?
 - Can they describe List.Add() vs array indexing?
-- Can they draw how Queue works?
+- Can they explain why the body moves with a `foreach` when the head wraps?
 
 **Summative:**
 - Add a second food type worth 50 points
@@ -168,7 +167,7 @@ Assets/
 ### Getting Started
 1. Read `SETUP_INSTRUCTIONS.md` first
 2. Once scene works, explore scripts in session order
-3. **Read ALL comments** - they explain WHY and HOW
+3. **Read each script's header**, then the matching section of `LOOPS_AND_LISTS_CONCEPTS.md` for the WHY and HOW
 4. Experiment with Inspector values
 5. Try the extension ideas below
 
@@ -191,11 +190,10 @@ List<SnakeSegment> bodySegments = new List<SnakeSegment>();
 bodySegments.Add(newSegment);  // Grows dynamically!
 ```
 
-**Key Pattern:** Queues for position trails
+**Key Pattern:** Following the last item in a List
 ```csharp
-Queue<Vector3> positionHistory = new Queue<Vector3>();
-positionHistory.Enqueue(currentPosition);  // Add to back
-Vector3 oldPos = positionHistory.Dequeue();  // Remove from front
+SnakeSegment lastSegment = bodySegments[bodySegments.Count - 1];  // Last item
+newSegment.SetTarget(lastSegment.transform, segmentSpacing);       // Follow it
 ```
 
 ### Extension Ideas
@@ -217,6 +215,8 @@ Vector3 oldPos = positionHistory.Dequeue();  // Remove from front
 - Local 2-player (WASD + Arrow keys)
 - Boss AI with special abilities
 - Procedural map generation
+- Re-add a `Queue<Vector3>` position history so segments follow the head's exact path (Enqueue/Dequeue, `while` loop to cap its size)
+- Self-collision: a `for` loop over `bodySegments` starting at index 3 (the first few are always touching the head), with `break` on the first hit
 
 ---
 
@@ -225,9 +225,9 @@ Vector3 oldPos = positionHistory.Dequeue();  // Remove from front
 ### Loop Usage Summary
 | Loop Type | Use Cases | Count |
 |-----------|-----------|-------|
-| `for` | Initialize segments, spawn food/AI, collision checks | 8 |
-| `foreach` | Update all segments, cleanup, iterate collections | 6 |
-| `while` | Spawn validation, queue limits, retry logic | 3 |
+| `for` | Build starting body, grow, spawn food, spawn AI | 6 |
+| `foreach` | Move segments on wrap, cleanup, check AI distances | 7 |
+| `while` | Food spawn position retry | 1 |
 
 ### List/Collection Usage
 | Collection | Purpose | Modified In |
@@ -235,7 +235,6 @@ Vector3 oldPos = positionHistory.Dequeue();  // Remove from front
 | `List<SnakeSegment>` | Track body segments | Player, AI |
 | `List<FoodPellet>` | Track active food | FoodSpawner |
 | `List<AISnakeController>` | Track AI opponents | GameManager |
-| `Queue<Vector3>` | Position history for following | Player, AI |
 
 ### Update Timing Strategy
 | Method | Used For | Frequency |
@@ -274,7 +273,8 @@ See **[SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)** for detailed troubleshoot
 ### Documentation
 - **Full Teaching Guide:** `Assets/Scripts/README.md`
 - **Setup Instructions:** `SETUP_INSTRUCTIONS.md`
-- **Inline Comments:** Every script has explanatory comments
+- **Concepts Reference:** `LOOPS_AND_LISTS_CONCEPTS.md` (the long explanations, diagrams, and TRY IT experiments)
+- **Inline Comments:** short one-line pointers; each script's header names its concepts section
 
 ### Unity Concepts Used
 - 2D Sprite Rendering
@@ -310,7 +310,7 @@ Students should always have working code. Each session adds functionality withou
 Implement the simplest version that works. No over-engineering. Focus on core concepts.
 
 **"Read, Repeat, Understand"**
-Code is heavily commented to explain WHY and HOW, not just WHAT. Students read first, then implement similar patterns.
+Scripts keep short one-line comments so students can find the code; `LOOPS_AND_LISTS_CONCEPTS.md` explains WHY and HOW. Students read first, then implement similar patterns.
 
 **"Loops and Lists First"**
 Every system demonstrates practical loop usage and list management. This is the lens through which we teach.

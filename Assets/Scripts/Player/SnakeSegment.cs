@@ -1,14 +1,9 @@
 /*
- * SnakeSegment.cs
+ * GAME 220: Slither Template -- SnakeSegment
+ * One body piece. It follows the Transform in front of it (head, then the segment ahead) with MoveTowards.
+ * Concepts: LOOPS_AND_LISTS_CONCEPTS.md section 2 -- following another object
  *
- * LEARNING FOCUS: Following another object
- *
- * Key Concepts:
- * - Transform references to track another object
- * - Vector3.MoveTowards for smooth, constant-speed movement
- *
- * Each segment stores a reference to what it should follow.
- * The first segment follows the head, the second follows the first, etc.
+ * Session 2: read SetTarget() and FixedUpdate()
  */
 
 using UnityEngine;

@@ -9,10 +9,10 @@
 ## 📊 Project Statistics
 
 - **Total Scripts:** 8 C# files
-- **Total Lines of Code:** 1,375 lines (including extensive teaching comments)
+- **Total Lines:** about 1,230 across the 8 scripts (short one-line comments; explanations live in `LOOPS_AND_LISTS_CONCEPTS.md`)
 - **Prefabs:** 3 (SnakeSegment, FoodPellet, AISnake)
-- **Materials:** 3 (Player: Green, AI: Red, Food: Yellow)
-- **Documentation Files:** 3 (README.md, SETUP_INSTRUCTIONS.md, Assets/Scripts/README.md)
+- **Materials:** 3 (Player: Green, AI: Red, Food: Yellow), not used by the prefabs; colors are set on each Sprite Renderer (player green, AI orange, food white)
+- **Documentation Files:** 4 (README.md, SETUP_INSTRUCTIONS.md, Assets/Scripts/README.md, LOOPS_AND_LISTS_CONCEPTS.md)
 - **Implementation Time:** ~3 hours
 - **Unity Version:** 6000.6.0f1
 - **Render Pipeline:** Built-in 2D
@@ -27,20 +27,19 @@
 - Mouse-following head movement
 - Smooth rotation toward cursor
 - Update() for input, FixedUpdate() for movement
-- **File:** `PlayerSnakeController.cs` (lines 80-115)
+- **File:** `PlayerSnakeController.cs` (`Update()`, `MoveHead()`)
 
 #### **Session 2: Body Segments Part 1** ✅
 - List<SnakeSegment> implementation
 - for loop initialization of 3 starting segments
-- Simple Lerp-based following
-- **Files:** `PlayerSnakeController.cs` (lines 117-144), `SnakeSegment.cs`
+- Each segment follows the one ahead with `Vector3.MoveTowards`
+- **Files:** `PlayerSnakeController.cs` (`CreateStartingBody()`, `AddSegment()`), `SnakeSegment.cs`
 
-#### **Session 3: Body Segments Part 2 & Queue Following** ✅
-- Queue<Vector3> for position history
-- Enqueue/Dequeue operations
-- while loop for queue limiting
-- Smooth historical position following
-- **File:** `PlayerSnakeController.cs` (lines 146-184)
+#### **Session 3: Body Segments Part 2 & Growth** ✅
+- New segments follow `bodySegments[bodySegments.Count - 1]` (the last item)
+- `Grow(amount)` runs a for loop to add segments
+- Follow chain: HEAD -> Seg0 -> Seg1 -> ...
+- **File:** `PlayerSnakeController.cs` (`AddSegment()`, `Grow()`)
 
 #### **Session 4: Food System** ✅
 - List<FoodPellet> for tracking active food
@@ -52,12 +51,12 @@
 - **Files:** `FoodSpawner.cs`, `FoodPellet.cs`, `ScoreManager.cs`
 
 #### **Session 5: Collision Detection** ✅
-- Self-collision detection (for loop with break)
+- Player dies on contact with an AI snake (head or body)
 - Boundary wrapping (Pac-Man style)
 - Game over state management
 - Restart functionality (Press R)
 - Static utility methods in BoundsHelper
-- **Files:** `PlayerSnakeController.cs` (lines 211-240), `BoundsHelper.cs`, `GameManager.cs`
+- **Files:** `PlayerSnakeController.cs` (`CheckBoundaries()`, `Die()`), `BoundsHelper.cs`, `GameManager.cs`
 
 #### **Session 6: AI Snakes & Polish** ✅
 - AISnakeController with code reuse
@@ -76,16 +75,15 @@
 
 | Loop Type | Count | Examples |
 |-----------|-------|----------|
-| **for** | 8 | Initialize segments, spawn food, spawn AI, collision checks |
-| **foreach** | 6 | Update segments, cleanup AI, iterate food pellets |
-| **while** | 3 | Spawn validation, queue limiting, retry logic |
+| **for** | 6 | Build starting body, grow, spawn food, spawn AI |
+| **foreach** | 7 | Move segments on wrap, cleanup segments and AI, check AI distances |
+| **while** | 1 | Food spawn position retry |
 
 ### Collections Implemented:
 
 | Collection Type | Count | Purpose |
 |-----------------|-------|---------|
 | **List<T>** | 3 | Snake segments, food pellets, AI snakes |
-| **Queue<T>** | 1 | Position history for smooth following |
 
 ---
 
@@ -98,19 +96,19 @@ SlitherTemplate/
 │   │   └── SlitherTemplate_Base.unity
 │   ├── Scripts/
 │   │   ├── Player/
-│   │   │   ├── PlayerSnakeController.cs (270 lines)
-│   │   │   └── SnakeSegment.cs (85 lines)
+│   │   │   ├── PlayerSnakeController.cs
+│   │   │   └── SnakeSegment.cs
 │   │   ├── Food/
-│   │   │   ├── FoodSpawner.cs (175 lines)
-│   │   │   └── FoodPellet.cs (95 lines)
+│   │   │   ├── FoodSpawner.cs
+│   │   │   └── FoodPellet.cs
 │   │   ├── AI/
-│   │   │   └── AISnakeController.cs (265 lines)
+│   │   │   └── AISnakeController.cs
 │   │   ├── Managers/
-│   │   │   ├── GameManager.cs (170 lines)
-│   │   │   └── ScoreManager.cs (85 lines)
+│   │   │   ├── GameManager.cs
+│   │   │   └── ScoreManager.cs
 │   │   ├── Utils/
-│   │   │   └── BoundsHelper.cs (160 lines)
-│   │   └── README.md (650 lines - full teaching guide)
+│   │   │   └── BoundsHelper.cs
+│   │   └── README.md (full teaching guide)
 │   ├── Prefabs/ (folder created, prefabs need manual creation in Unity)
 │   ├── Materials/
 │   │   ├── PlayerSnakeMaterial.mat (Green: RGB 0.2, 0.8, 0.3)
@@ -118,6 +116,7 @@ SlitherTemplate/
 │   │   └── FoodMaterial.mat (Yellow: RGB 1, 0.8, 0.2)
 ├── README.md (comprehensive project overview)
 ├── SETUP_INSTRUCTIONS.md (step-by-step Unity setup)
+├── LOOPS_AND_LISTS_CONCEPTS.md (long explanations, diagrams, TRY IT experiments)
 └── IMPLEMENTATION_SUMMARY.md (this file)
 ```
 
@@ -125,17 +124,24 @@ SlitherTemplate/
 
 ## 🎓 Teaching Features Implemented
 
-### Extensive Comments:
-Every script includes:
-- **Header block** explaining session, teaching focus, and purpose
-- **TEACHING:** comments before every key concept
-- **Inline explanations** of WHY and HOW, not just WHAT
-- **Alternative approaches** commented out for reference
+### Teaching Comment Conventions
+
+Trimmed in Oct 2026. Last quarter students had trouble finding the code because long
+TEACHING blocks split it up, and four scripts were 65-75% comments. The rule now (same as
+WatermelonTemplate): **the script shows the code, and `LOOPS_AND_LISTS_CONCEPTS.md` explains it.**
+
+1. **File headers:** 3-6 lines. What the file does, which concept it shows, which
+   `LOOPS_AND_LISTS_CONCEPTS.md` section explains it, and the session tasks.
+2. **One line per comment.** Comments are a short line above a method or at the end of a line.
+   There are no multi-line blocks inside a class.
+3. **Section dividers:** `// ---------- Name ----------` so students can scan for sections.
+4. **`// TRY IT:` markers:** one line where a student experiment starts. The steps are in section 9 of the concepts doc.
+5. **`[Header()]` / `[Tooltip()]`:** stay on Inspector fields, so the Inspector explains itself.
+6. **No XML `<summary>` blocks.** Method names carry the meaning, and a one-line comment covers the rest.
 
 ### Code Pattern Examples:
 - Update vs FixedUpdate separation
 - List<T> dynamic collection management
-- Queue<T> FIFO operations
 - for/foreach/while loop patterns
 - Static utility methods
 - Component communication
@@ -144,8 +150,7 @@ Every script includes:
 
 ### Debugging Support:
 - OnDrawGizmos for visual debugging in Editor
-- Collision range visualization
-- Spawn area visualization
+- Play bounds visualization (FoodSpawner, green: where food and AI spawn) and GameManager's `spawnAreaMin/Max` box (cyan, drawing only)
 - Debug.Log statements at key points
 
 ### Inspector-Friendly:
@@ -211,7 +216,6 @@ After Unity setup, test:
 - [ ] Score increases (+10 per food)
 - [ ] 3 AI snakes spawn and wander
 - [ ] AI changes direction randomly
-- [ ] Player dies on self-collision
 - [ ] Player dies on AI collision
 - [ ] Snake wraps at boundaries
 - [ ] Game over shows on death
@@ -223,7 +227,6 @@ After Unity setup, test:
 
 ### Primary Objectives: ✅ All Met
 - ✅ Lists for dynamic collections
-- ✅ Queues for FIFO data structures
 - ✅ for loops for counted iteration
 - ✅ foreach loops for collection iteration
 - ✅ while loops for conditional iteration
@@ -254,11 +257,9 @@ After Unity setup, test:
 
 ### For Students:
 1. **README.md** - Getting started guide with extension ideas
-2. **Inline comments** - Every script heavily commented with:
-   - WHY this code exists
-   - HOW it works
-   - TEACHING: tags highlighting key concepts
-3. **Code patterns** - Reusable patterns clearly demonstrated
+2. **Inline comments** - short one-line pointers; each script's header names its concepts section
+3. **LOOPS_AND_LISTS_CONCEPTS.md** - the WHY and HOW: diagrams, loop traces, and TRY IT experiments
+4. **Code patterns** - Reusable patterns clearly demonstrated
 
 ---
 
@@ -307,11 +308,11 @@ The architecture supports future multiplayer without rewriting:
 - Focuses teaching on loops/lists, not input complexity
 - WASD input already configured in InputSystem_Actions if needed later
 
-### Why Queue for Following?
-- Perfectly demonstrates FIFO concept
-- More professional result than simple Lerp
-- Shows practical use of data structures
-- Students see clear before/after improvement
+### Why Simple Follow-the-Leader?
+- The Jan 19 "Slither core" version used a `Queue<Vector3>` position history and self-collision.
+  The Jan 24 "version 1" rewrite removed both to keep the template bare-minimum.
+- Each segment follows the one ahead with `MoveTowards`, which keeps the focus on `List<T>` and loops
+- Queue following and self-collision are now extension ideas (see README.md)
 
 ### Why Static BoundsHelper?
 - Introduces static methods concept
@@ -319,8 +320,8 @@ The architecture supports future multiplayer without rewriting:
 - Clean utility pattern for students to reuse
 
 ### Why Sessions 2-3 Split?
-- Session 2: Simple following (List basics)
-- Session 3: Queue following (advanced, compare improvement)
+- Session 2: Build the starting body (List basics, for loop)
+- Session 3: Growth (List indexing, `Grow()` for loop)
 - Shows iterative improvement process
 
 ### Why Separate Food Scripts?
@@ -346,7 +347,7 @@ The architecture supports future multiplayer without rewriting:
 - Reduces frustration
 
 ### "Read, Repeat, Understand":
-- Code commented as lecture notes
+- Lecture notes live in LOOPS_AND_LISTS_CONCEPTS.md, next to short code comments
 - Students read working examples
 - Then implement similar patterns
 - Build muscle memory
@@ -364,23 +365,25 @@ The architecture supports future multiplayer without rewriting:
 ### By Script:
 | Script | Lines | Comments | Code | Ratio |
 |--------|-------|----------|------|-------|
-| PlayerSnakeController | 270 | ~140 | ~130 | 52% comments |
-| AISnakeController | 265 | ~120 | ~145 | 45% comments |
-| FoodSpawner | 175 | ~80 | ~95 | 46% comments |
-| SnakeSegment | 85 | ~40 | ~45 | 47% comments |
-| GameManager | 170 | ~75 | ~95 | 44% comments |
-| ScoreManager | 85 | ~30 | ~55 | 35% comments |
-| FoodPellet | 95 | ~40 | ~55 | 42% comments |
-| BoundsHelper | 160 | ~70 | ~90 | 44% comments |
+| PlayerSnakeController | 225 | 27 | 163 | 12% comments |
+| AISnakeController | 204 | 14 | 155 | 7% comments |
+| FoodSpawner | 132 | 16 | 97 | 12% comments |
+| SnakeSegment | 50 | 13 | 28 | 26% comments |
+| GameManager | 210 | 38 | 126 | 18% comments |
+| ScoreManager | 118 | 28 | 67 | 24% comments |
+| FoodPellet | 145 | 26 | 95 | 18% comments |
+| BoundsHelper | 142 | 31 | 88 | 22% comments |
 
-**Total:** ~44% of lines are teaching comments
+**Total:** about 15% of lines are comments (down from about 55% before the Oct 2026 trim; the rest are blank lines).
+Counts are from Oct 2026 and will drift as the code changes.
 
 ---
 
 ## ✅ Deliverables Complete
 
-- ✅ 8 fully-commented C# scripts
-- ✅ 3 material files (color-coded for clarity)
+- ✅ 8 C# scripts with short pointer comments
+- ✅ Concepts reference (LOOPS_AND_LISTS_CONCEPTS.md)
+- ✅ 3 material files (color-coded, not yet assigned to the prefabs)
 - ✅ Complete folder structure
 - ✅ Comprehensive README (project overview)
 - ✅ Detailed SETUP_INSTRUCTIONS (Unity configuration)
@@ -409,7 +412,7 @@ The architecture supports future multiplayer without rewriting:
 ### What Works Out of the Box:
 - All code compiles
 - All logic is complete
-- All comments are in place
+- All script headers point to their concepts section
 - All materials are created
 
 ### What Requires Unity Setup:
@@ -431,7 +434,6 @@ The architecture supports future multiplayer without rewriting:
 This template is successful if students:
 - ✅ Can explain Update vs FixedUpdate
 - ✅ Understand List.Add() and List.Remove()
-- ✅ Can describe Queue as FIFO
 - ✅ Write for/foreach/while loops confidently
 - ✅ See practical use of data structures
 - ✅ Build a complete, playable game

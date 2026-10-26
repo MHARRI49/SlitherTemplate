@@ -9,7 +9,6 @@ This Unity template is designed for a **3-week, 6-session** course (Feb 4-16) te
 
 Students will learn:
 - **Lists** (`List<T>`) for dynamic collections
-- **Queues** (`Queue<T>`) for FIFO data structures
 - **for loops** for counted iteration
 - **foreach loops** for collection iteration
 - **while loops** for conditional iteration
@@ -28,7 +27,7 @@ Students will learn:
 - Proper use of Update (input) and FixedUpdate (movement)
 
 **Files to Explore:**
-- `Player/PlayerSnakeController.cs` - Lines 80-115 (GetMouseInput, MoveTowardsMouse)
+- `Player/PlayerSnakeController.cs` - `Update()`, `MoveHead()`
 
 **Key Concepts:**
 - steerAction.ReadValue<Vector2>() (Input System) → Camera.ScreenToWorldPoint
@@ -46,13 +45,12 @@ Students will learn:
 - Simple List-based management
 
 **Files to Explore:**
-- `Player/PlayerSnakeController.cs` - Lines 117-144 (InitializeBody, AddSegment, UpdateBodySegments)
-- `Player/SnakeSegment.cs` - Full file (Lerp-based following)
+- `Player/PlayerSnakeController.cs` - `CreateStartingBody()`, `AddSegment()`
+- `Player/SnakeSegment.cs` - Full file (MoveTowards following)
 
 **Key Concepts:**
 - `List<SnakeSegment>` declaration and initialization
 - `for` loop to create starting segments
-- `foreach` loop to update all segments
 - `List.Add()` to grow the list
 
 ---
@@ -61,19 +59,17 @@ Students will learn:
 **Status:** ✅ Complete and functional
 
 **What Works:**
-- Smoother following using Queue<Vector3>
-- Position history system
+- Each new segment follows the current last segment
+- `Grow()` adds any number of segments
 - Dynamic segment addition
 
 **Files to Explore:**
-- `Player/PlayerSnakeController.cs` - Lines 146-184 (RecordPosition, GetHistoricalPosition)
+- `Player/PlayerSnakeController.cs` - `AddSegment()`, `Grow()`
 
 **Key Concepts:**
-- `Queue<Vector3>` for FIFO position storage
-- `Enqueue()` adds to back
-- `Dequeue()` removes from front
-- `while` loop to limit queue size
-- Converting Queue to array for indexing
+- `bodySegments[bodySegments.Count - 1]` to get the last item
+- `for` loop in `Grow()` to add several segments
+- `List.Count` grows as segments are added
 
 ---
 
@@ -89,7 +85,7 @@ Students will learn:
 **Files to Explore:**
 - `Food/FoodSpawner.cs` - Full file (List management, spawning loops)
 - `Food/FoodPellet.cs` - Full file (OnTriggerEnter2D)
-- `Player/PlayerSnakeController.cs` - Lines 186-209 (Grow, OnTriggerEnter2D)
+- `Player/PlayerSnakeController.cs` - `Grow()`, `OnTriggerEnter2D()`
 - `Managers/ScoreManager.cs` - Full file (UI integration)
 
 **Key Concepts:**
@@ -105,20 +101,19 @@ Students will learn:
 **Status:** ✅ Complete and functional
 
 **What Works:**
-- Self-collision detection (head hits body)
+- Player dies when its head hits an AI snake
 - Boundary wrapping (like Pac-Man)
 - Game over state
 - Restart functionality (press R)
 
 **Files to Explore:**
-- `Player/PlayerSnakeController.cs` - Lines 211-240 (CheckSelfCollision, CheckBoundaries, Die)
+- `Player/PlayerSnakeController.cs` - `CheckBoundaries()`, `Die()`
 - `Utils/BoundsHelper.cs` - Full file (Static utility methods)
-- `Managers/GameManager.cs` - Lines 68-97 (GameOver, RestartGame)
+- `Managers/GameManager.cs` - `GameOver()`, `RestartGame()`
 
 **Key Concepts:**
-- `for` loop to check collision with all segments
-- `break` statement to exit loop early
-- Skip first few segments (start at index 3)
+- `foreach` loop to move every segment when the head wraps
+- OnTriggerEnter2D + CompareTag("AISnake") for death
 - Static helper methods
 - Boundary wrapping with modulo-like logic
 
@@ -136,10 +131,10 @@ Students will learn:
 
 **Files to Explore:**
 - `AI/AISnakeController.cs` - Full file (Code reuse, timers, random direction)
-- `Managers/GameManager.cs` - Lines 40-66 (SpawnAISnakes, List management)
+- `Managers/GameManager.cs` - `SpawnAISnakes()`, `SpawnSingleAISnake()`
 
 **Key Concepts:**
-- Code reuse (AI uses same List/Queue patterns as player)
+- Code reuse (AI uses the same List and loop patterns as the player)
 - Timers with Time.deltaTime
 - Random.insideUnitCircle for random directions
 - `for` loop to spawn multiple AI
@@ -153,16 +148,16 @@ Students will learn:
 ### For Teachers:
 1. **Session 1**: Focus on Update vs FixedUpdate concepts. Have students trace the mouse input → movement flow.
 2. **Session 2**: Introduce Lists. Have students add segments manually and observe List.Add().
-3. **Session 3**: Introduce Queues. Compare smooth queue-based following vs simple following.
+3. **Session 3**: Growth. Have students change `Grow()` amounts and trace how each segment picks its target.
 4. **Session 4**: Practice List operations. Have students modify spawn count and observe loops.
-5. **Session 5**: Teach loop optimization. Show why starting at index 3 matters for collision.
+5. **Session 5**: Boundaries and game over. Swap wrapping for clamping and trace the GameOver() cleanup.
 6. **Session 6**: Emphasize code reuse. AI reuses player patterns - this is good design!
 
 ### For Students:
-- **Read the comments!** They explain WHY and HOW, not just WHAT.
+- **Read the script header**, then its section of `LOOPS_AND_LISTS_CONCEPTS.md`. That's where the WHY and HOW are.
 - **Experiment!** Change numbers in the Inspector and see what happens.
 - **Add features!** Try adding: speed boost, different food types, score multipliers.
-- **Debug!** Use the Gizmos visualization (yellow circles in editor) to understand collision.
+- **Debug!** Use the Gizmos in the Scene view: green box = play bounds, where food and AI actually spawn. The cyan box is GameManager's `spawnAreaMin/Max`, which only draws.
 
 ---
 
@@ -172,12 +167,11 @@ Students will learn:
 1. `List<SnakeSegment> bodySegments` - Player/AI body management
 2. `List<FoodPellet> activeFoodPellets` - Food tracking
 3. `List<AISnakeController> aiSnakes` - AI management
-4. `Queue<Vector3> positionHistory` - Position trails
 
 ### Loops Used:
-1. **for loops**: Initialize segments, spawn food, spawn AI, collision checks
-2. **foreach loops**: Update segments, cleanup AI, iterate collections
-3. **while loops**: Spawn validation, queue limiting
+1. **for loops**: Build starting body, grow, spawn food, spawn AI
+2. **foreach loops**: Move segments on wrap, cleanup segments and AI, check AI distances
+3. **while loops**: Food spawn position retry
 
 ---
 
@@ -251,23 +245,23 @@ Students will learn:
 
 **Demo:** Show what happens if you try to add a segment to an array (can't!). Then show List.Add() working perfectly.
 
-### Session 3: Queues
-**Why FIFO matters:** Segments follow the path the head took. Oldest positions should be used first (FIFO).
+### Session 3: The Follow Chain
+**Why the last item:** A new segment always follows `bodySegments[bodySegments.Count - 1]`, so the body forms a chain.
 
-**Demo:** Draw on whiteboard: Head position at time 0,1,2,3... Segment 1 follows time 0, segment 2 follows time -5, etc.
+**Demo:** Draw on whiteboard: HEAD <- Seg0 <- Seg1 <- Seg2. Add Seg3 and show it points at Seg2.
 
 ### Session 4: While Loops
 **When to use:** When you don't know how many iterations you need, but you know a condition to stop.
 
 **Example:** Spawning food - keep trying random positions WHILE they're too close to snakes.
 
-### Session 5: Loop Optimization
-**Break statement:** Why check ALL segments if we already found a collision?
+### Session 5: Wrapping and Cleanup
+**Why foreach on wrap:** When the head teleports, every segment must move by the same offset or the body stretches across the screen.
 
-**Start index:** Why start at 3? Because segments 0-2 are too close to the head to collide.
+**Cleanup:** GameOver() needs both `Destroy()` and `List.Clear()` (see LOOPS_AND_LISTS_CONCEPTS.md section 7).
 
 ### Session 6: Code Reuse
-**Design pattern:** Player and AI both need Lists, Queues, and segment management. Don't duplicate code!
+**Design pattern:** Player and AI both need a List and the same segment management. The patterns carry over.
 
 **Demo:** Show how AISnakeController reuses the exact same patterns. Change mouse input → random direction. Everything else is the same!
 
@@ -294,6 +288,8 @@ Once students complete all 6 sessions, challenge them with:
 - Local multiplayer (2 players, split controls)
 - Obstacles that kill snakes
 - Boss AI with special abilities
+- Re-add a `Queue<Vector3>` position history so segments follow the head's exact path (Enqueue/Dequeue, `while` loop to cap its size)
+- Self-collision: a `for` loop over `bodySegments` starting at index 3 (the first few are always touching the head), with `break` on the first hit
 
 ### Advanced:
 - Online multiplayer (requires networking knowledge)
@@ -306,13 +302,10 @@ Once students complete all 6 sessions, challenge them with:
 ## 📝 Common Issues & Solutions
 
 ### Issue: Segments bunch up
-**Solution:** Increase `maxHistorySize` or adjust `followSpeed` in SnakeSegment
+**Solution:** Increase `segmentSpacing` on the snake (it overrides SnakeSegment's `followDistance`) or raise SnakeSegment `moveSpeed`
 
 ### Issue: Food spawns inside snake
 **Solution:** `FoodSpawner.IsPositionValid()` checks distance - increase `minDistanceFromSnakes`
-
-### Issue: Self-collision too sensitive
-**Solution:** Increase `collisionDistance` or start checking at higher index
 
 ### Issue: AI gets stuck in corners
 **Solution:** Add boundary avoidance in `AISnakeController.ChangeDirection()`
@@ -327,13 +320,10 @@ Once students complete all 6 sessions, challenge them with:
 - **Update()**: Runs every frame at variable rate for input
 - **FixedUpdate()**: Runs at fixed 50Hz rate for physics
 - **List<T>**: Dynamic collection that can grow/shrink
-- **Queue<T>**: FIFO (First-In-First-Out) collection
 - **for loop**: Counted iteration (known number of iterations)
 - **foreach loop**: Iterate all items in a collection
 - **while loop**: Conditional iteration (unknown iterations)
-- **Enqueue**: Add to back of queue
-- **Dequeue**: Remove from front of queue
-- **Lerp**: Linear interpolation (smooth movement)
+- **MoveTowards**: Move toward a point at a constant speed
 - **OnTriggerEnter2D**: Unity collision event
 - **CompareTag**: Fast way to check GameObject tags
 
@@ -345,12 +335,12 @@ After implementation, verify:
 
 - [ ] Session 1: Snake head follows mouse smoothly
 - [ ] Session 2: 3 segments spawn and trail behind
-- [ ] Session 3: Following is smooth (queue-based)
+- [ ] Session 3: Snake grows and new segments join the end of the chain
 - [ ] Session 4: Food spawns, respawns, snake grows, score updates
-- [ ] Session 5: Self-collision kills player, boundaries wrap
+- [ ] Session 5: Hitting an AI kills the player, boundaries wrap
 - [ ] Session 6: 3 AI snakes wander, player can collide with them
-- [ ] All scripts have teaching comments
-- [ ] Gizmos show collision/spawn areas in editor
+- [ ] Every script header names its `LOOPS_AND_LISTS_CONCEPTS.md` section
+- [ ] Gizmos show the play bounds (green) and GameManager's spawn area (cyan) in the editor
 - [ ] Press R restarts the game
 
 ---
@@ -360,7 +350,7 @@ After implementation, verify:
 ### Formative (during sessions):
 - Can students explain why Update vs FixedUpdate matters?
 - Can students add a segment to the list manually?
-- Can students describe how Queue differs from List?
+- Can students explain why `Count - 1` is the last index?
 - Can students explain what foreach does?
 
 ### Summative (end of 3 weeks):
