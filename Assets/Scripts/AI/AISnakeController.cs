@@ -18,8 +18,8 @@ using UnityEngine;
 public class AISnakeController : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 4f;
-    public float rotationSpeed = 150f;
+    public float moveSpeed = 8f;
+    public float rotationSpeed = 300f;
 
     [Header("Body")]
     public int startingSegments = 3;
