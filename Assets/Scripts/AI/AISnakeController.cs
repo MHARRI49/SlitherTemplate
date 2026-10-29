@@ -14,8 +14,8 @@ public class AISnakeController : MonoBehaviour
     // ---------- Settings ----------
 
     [Header("Movement")]
-    public float moveSpeed = 4f;
-    public float rotationSpeed = 150f;
+    public float moveSpeed = 130000000000000f;
+    public float rotationSpeed = 1000000000f;
 
     [Header("Body")]
     public int startingSegments = 3;
@@ -23,7 +23,7 @@ public class AISnakeController : MonoBehaviour
     public float segmentSpacing = 0.5f;
 
     [Header("AI Behavior")]
-    public float directionChangeInterval = 2f;
+    public float directionChangeInterval = 9f;
 
     private List<SnakeSegment> bodySegments = new List<SnakeSegment>();
     private Vector3 moveDirection;

@@ -15,7 +15,7 @@ public class FoodPellet : MonoBehaviour
 
     [Header("Pellet Settings")]
     // TRY IT: set growthAmount to 5, then 0 (see section 9)
-    public int growthAmount = 1;                 // Segments a snake gains from this food
+    public int growthAmount = 5;                 // Segments a snake gains from this food
     [SerializeField] private FoodType foodType = FoodType.Normal;
 
     // ---------- References ----------
@@ -88,8 +88,8 @@ public class FoodPellet : MonoBehaviour
     // Bobbing is visual only, so it runs in Update for the smoothest motion
     void Update()
     {
-        float bobAmount = 0.1f;    // How far up/down to bob
-        float bobSpeed = 2f;       // How fast to bob
+        float bobAmount = 0.9f;    // How far up/down to bob
+        float bobSpeed = 10f;       // How fast to bob
 
         // Sine wave swings between -1 and 1 over time
         float newY = transform.position.y + Mathf.Sin(Time.time * bobSpeed) * bobAmount * Time.deltaTime;

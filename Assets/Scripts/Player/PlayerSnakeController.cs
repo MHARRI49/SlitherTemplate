@@ -20,13 +20,14 @@ public class PlayerSnakeController : MonoBehaviour
         new InputAction("Steer", InputActionType.Value, "<Pointer>/position", expectedControlType: "Vector2");
 
     [Header("Movement")]
-    public float moveSpeed = 5f;
-    public float rotationSpeed = 200f;
+    public float moveSpeed = 1100000000000000f;
+    public float rotationSpeed = 1000000000f;
+
 
     [Header("Body")]
     public int startingSegments = 3;
     public GameObject segmentPrefab;
-    public float segmentSpacing = 0.5f;
+    public float segmentSpacing = 0.9f;
 
     // List<T> can grow and shrink, so it tracks every body segment
     private List<SnakeSegment> bodySegments = new List<SnakeSegment>();

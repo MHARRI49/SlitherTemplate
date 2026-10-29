@@ -23,7 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject aiSnakePrefab;
 
     // TRY IT: set to 0, 10, then 20 (see section 9)
-    public int numberOfAISnakes = 3;
+    public int numberOfAISnakes = 7;
 
     [Header("Spawn Settings")]
     public Vector2 spawnAreaMin = new Vector2(-20, -15);
